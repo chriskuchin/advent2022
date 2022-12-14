@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"io"
 	"os"
-	"strings"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -32,23 +31,25 @@ func main() {
 				log.Fatal().Err(err).Send()
 			}
 		} else {
-			if len(sequence) < 4 {
+			if len(sequence) < 14 {
 				sequence += string(c)
 			} else {
 				sequence += string(c)
 				sequence = sequence[1:]
 				log.Info().Str("sequence", sequence).Int("chars", charCount).Send()
+				if hasOnlyUniqueCharacters(sequence) {
+					log.Info().Int("count", charCount).Str("seq", sequence).Send()
+					break
+				}
 			}
 		}
 	}
 }
 
 func hasOnlyUniqueCharacters(seq string) bool {
+	charMap := map[string]bool{}
 	for _, ch := range seq {
-		log.Info().Str("ch", string(ch)).Str("seq", seq).Send()
-		if strings.Contains(seq, string(ch)) {
-			return false
-		}
+		charMap[string(ch)] = true
 	}
-	return true
+	return len(charMap) == len(seq)
 }
